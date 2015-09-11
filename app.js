@@ -78,7 +78,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 app.use(lusca({
-  csrf: false,
+  //csrf: false,
   xframe: 'SAMEORIGIN',
   xssProtection: true
 }));
@@ -96,7 +96,7 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
 /**
  * Primary app routes.
  */
-app.get('/', homeController.index);
+app.get('/', lusca.csrf(), homeController.index);
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
@@ -114,7 +114,8 @@ app.post('/account/password', passportConf.isAuthenticated, userController.postU
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
-app.post('/docupload', multer({ dest: './uploads/'}).single('docFilename'), docController.docUpload);
+app.post('/docupload', multer({ dest: './uploads/'}).single('docFilename'), lusca.csrf(), docController.docUpload);
+app.get('/docviewer', docController.docViewer);
 
 /**
  * API examples routes.

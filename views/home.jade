@@ -4,7 +4,7 @@ block content
   h1 Upload an Indenture or OM
   hr
   form#uploadForm(enctype="multipart/form-data", action="/docupload", method="post")
-    //- input(type='hidden', name='_csrf', value=_csrf)
+    input(type='hidden', name='_csrf', value=_csrf)
     .form-group
       input(type="file", id="docUploadFilename", name="docFilename")
     button.btn.btn-primary(type="submit")
