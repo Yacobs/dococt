@@ -1,4 +1,4 @@
-.navbar.navbar-default.navbar-fixed-top
+.navbar.navbar-default.navbar-fixed-top.navbar-inverse
   .container
     .navbar-header
       button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-collapse')
@@ -13,8 +13,10 @@
       ul.nav.navbar-nav
         li(class=title=='Home'?'active':undefined)
           a(href='/') Home
-        li(class=title=='API Examples'?'active':undefined)
-          a(href='/api') API Examples
+        li(class=title=='Document Viewer'?'active':undefined)
+          a(href='/docviewer') Document Viewer
+        //- li(class=title=='API Examples'?'active':undefined)
+        //-  a(href='/api') API Examples
         li(class=title=='Contact'?'active':undefined)
           a(href='/contact') Contact
       ul.nav.navbar-nav.navbar-right

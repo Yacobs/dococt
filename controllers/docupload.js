@@ -20,7 +20,7 @@ exports.docUpload = function(req, res) {
 
 exports.docViewer = function(req, res) 
 {
-	res.render('docviewer', {
-		title: 'Document Viewer'
-	});
+	//if (typeof req.query.file == 'undefined') 
+	//else 
+	res.render('docviewer', { title: 'Document Viewer', file: req.query.file });
 }

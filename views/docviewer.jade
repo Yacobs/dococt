@@ -3,4 +3,8 @@ extends layout
 block content
   .page-header
     h3 Document Viewer
+  if typeof file != 'undefined' 
+    | Click 
+    a(href=file) here
+    |  to download.
 
