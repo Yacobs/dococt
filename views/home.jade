@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  h1 Upload an Indenture or OM
+  h1 Upload an Indenture or OM in PDF
   hr
   form#uploadForm(enctype="multipart/form-data", action="/docupload", method="post")
     input(type='hidden', name='_csrf', value=_csrf)
@@ -10,3 +10,12 @@ block content
     button.btn.btn-primary(type="submit")
       i.fa.fa-cloud-upload
       | Upload
+
+  br
+  #uploadProgressDiv.hidden
+    img(src="ajax-loader.gif")
+    |  Processing your PDF... this could take a minute
+  
+block javascript
+  script.
+    $('#uploadForm').submit(function() { $('#uploadProgressDiv').removeClass('hidden'); });

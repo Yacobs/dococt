@@ -12,15 +12,24 @@ exports.docUpload = function(req, res)
 	{
 		var python = require('child_process').spawn(
 		'python',
-		['pdf2txt.py', '-o '+ req.file.filename + '.txt', req.file.filename ]
+		['pdf2txt.py', '-o', './uploads/' + req.file.filename + '.txt', './uploads/' + req.file.filename ]
 		);
 		
-		python.on('close', function(code){
-			if (code !== 0) console.log('Failed');
-			else console.log('Succeeded.');
-		});
+		python.stdout.on('data', function(data){ console.log('stdout: ' + data)  });
+		python.stderr.on('data', function(data){ console.log('stderr: ' + data)  });
 		
-		res.redirect('docviewer?file=' + req.file.filename);
+		python.on('close', function(code){
+			if (code !== 0) 
+			{
+				console.log('PDF Conversion Failed:' + code);
+				res.redirect('/');
+			}
+			else 
+			{
+				console.log('PDF Conversion Succeeded.');
+				res.redirect('docviewer?file=' + req.file.filename);
+			}
+		});
 	}
 };
 

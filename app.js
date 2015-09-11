@@ -114,7 +114,18 @@ app.post('/account/password', passportConf.isAuthenticated, userController.postU
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
+/*
+var storage = multer.diskStorage(
+{
+	destination: './uploads/',
+	filename: function (req, file, cb) 
+	{
+		cb(null, file.fieldname + '.pdf'); // + '-' + Date.now()
+    }
+});
+*/
 app.post('/docupload', multer({ dest: './uploads/'}).single('docFilename'), lusca.csrf(), docController.docUpload);
+//app.post('/docupload', multer({ storage: storage }).single('docFilename'), lusca.csrf(), docController.docUpload);
 app.get('/docviewer', docController.docViewer);
 
 /**
