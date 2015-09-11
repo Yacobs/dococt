@@ -128,7 +128,13 @@ var storage = multer.diskStorage(
 //app.post('/docupload', multer({ storage: storage }).single('docFilename'), lusca.csrf(), docController.docUpload);
 
 app.post('/docupload', timeout('120s'), multer({ dest: './uploads/'}).single('docFilename'), lusca.csrf(), docController.docUpload);
-app.post('/doccleanup', docController.docCleanUp);
+app.post('/doccleanup', 
+	function(req, res, next) 
+	{
+		req.body.db_uri = secrets.db;
+		next();
+	}, 
+	docController.docCleanUp);
 app.get('/docviewer', docController.docViewer);
 
 /**

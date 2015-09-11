@@ -3,16 +3,17 @@ import getopt
 from string import whitespace
 import pprint
 import logging
-
 import codecs
 import unicodedata
-
 import json
 import re
 
+import pymongo
+from pymongo import MongoClient
+
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv, 'i:o:s:hdl:', ['inputfile=', 'outputfile=', 'schema=', 'help', 'debug', 'logfile='])
+        opts, args = getopt.getopt(argv, 'i:o:s:hdl:m:', ['inputfile=', 'outputfile=', 'schema=', 'help', 'debug', 'logfile=', 'mongo='])
     except getopt.GetoptError:
         usage()
         sys.exit(2)
@@ -22,6 +23,7 @@ def main(argv):
     schemaFile = ''
     logFile = 'event.log'
     debug = False
+    mongoURI = ''
         
     for opt, arg in opts:
         if opt in ('-h', '--help'):
@@ -37,6 +39,8 @@ def main(argv):
             debug = True
         elif opt in ('-l', '--logfile'):
             logFile = arg
+        elif opt in ('-m', '--mongo'):
+            mongoURI = arg
         else:
             usage()
             sys.exit(2)
@@ -44,6 +48,11 @@ def main(argv):
     if inputFile == "" or outputFile == "":
         usage()
         sys.exit(2)
+    
+    # get just the name, no extension
+    namePieces = inputFile.split('/')
+    namePieces2 = namePieces[-1].split('.')
+    documentName = namePieces2[0]
     
     # open the log file
     if debug:
@@ -79,7 +88,16 @@ def main(argv):
     outputParagraphed = reconnect_paragraphs(schema, outputLines)
     
     # time to convert the set of lines into an object -- eventually to become a JSON representation
-    # document = find_sections(schema, outputParagraphed)
+    document = break_down(schema, outputParagraphed, documentName)
+    with codecs.open('DICTIONARY.json', 'w', encoding='utf-8') as fout:
+        json.dump(document, fout)
+        
+    if mongoURI != '':
+        client = MongoClient(mongoURI)
+        db = client.dococt
+        indentures = db.indentures
+        post_id = indentures.insert(document)
+        logging.debug("Inserted document into the database.")
     
     # outputSentenced = reconnect_sentences(schema, outputParagraphed)
 
@@ -88,9 +106,97 @@ def main(argv):
         for line in outputParagraphed:
             fout.write(line)
     
-    print "\nDone!"
+    print "\nPage Remover Done!"
     sys.exit(0)
     
+def break_down(schema, lines, documentName):
+    """
+        Given a schema and lines, break it down into pieces
+        Returns a dictionary object, instead of a set of lines
+    """
+    
+    document = {}
+    document['name'] = documentName
+    document['type'] = 'document'
+    
+    document['data'] = find_articles(schema, lines, 0, len(lines)-1)
+
+    return document
+    
+def find_articles(schema, lines, start, end):
+
+    data = []
+    
+    # find first article
+    articleStart = next_match(schema["general"]["article_header"], lines, start, end)
+
+    if articleStart > start:
+        textBlock = {}
+        textBlock['name'] = ''
+        textBlock['type'] = 'text'
+        textBlock['data'] = lines[start:articleStart]
+        
+        data.append(textBlock)
+    
+    # loop through and add all the other articles
+    while articleStart < end:
+    
+        nextArticle = next_match(schema["general"]["article_header"], lines, articleStart+1, end)
+        
+        if articleStart+1 < nextArticle:
+            article = {}
+            article['name'] = lines[articleStart]
+            article['type'] = 'article'
+            article['data'] = find_sections(schema, lines, articleStart+1, nextArticle-1) #lines[articleStart+1:nextArticle]
+            
+            data.append(article)
+
+        articleStart = nextArticle
+
+    return data
+        
+def find_sections(schema, lines, start, end):
+
+    data = []
+    
+    # find first section
+    sectionStart = next_match(schema["general"]["section_header"], lines, start, end)
+    
+    if sectionStart > start:
+        textBlock = {}
+        textBlock['name'] = ''
+        textBlock['type'] = 'text'
+        textBlock['data'] = lines[start:sectionStart]
+        
+        data.append(textBlock)
+        
+    # loop through and add all the other articles
+    while sectionStart < end:
+    
+        nextSection = next_match(schema["general"]["section_header"], lines, sectionStart+1, end)
+        
+        if sectionStart+1 < nextSection:
+            article = {}
+            article['name'] = lines[sectionStart]
+            article['type'] = 'section'
+            article['data'] = lines[sectionStart+1:nextSection] # find_sections(schema, lines, sectionStart+1, nextSection-1)
+            
+            data.append(article)
+
+        sectionStart = nextSection
+
+    return data
+    
+    
+def next_match(regex, lines, start, end):
+    nextMatch = end + 1
+    for i in xrange(start, end):
+        if re.search(regex, lines[i], re.UNICODE) is not None:
+            nextMatch = i
+            break
+    
+    return nextMatch
+       
 def reconnect_paragraphs(schema, lines):
     """
         Given a schema and a set of lines, reconnect paragraphs that have line breaks in the middle
@@ -208,7 +314,6 @@ def schemize_footer_header(schema, lines):
         
     # save the schema for repeating elements
     schema["footer"]["repeating"] = []
-    
     for key, val in potentials.iteritems():
         if val > minCount and ord(key[0]) != ord('\r') and ord(key[0]) != ord('\n') and ord(key[0]) != ord(' '):
             

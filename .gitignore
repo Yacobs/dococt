@@ -23,3 +23,5 @@ Thumbs.db
 run_app.sh
 uploads
 pdfminer
+pymongo
+bson

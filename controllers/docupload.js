@@ -26,7 +26,7 @@ exports.docUpload = function(req, res)
 
 exports.docCleanUp = function(req, res)
 {
-	//console.log(req.body);
+	console.log(req.body);
 	
 	if (typeof req.body.filename == 'undefined') res.redirect('/');
 
@@ -35,7 +35,8 @@ exports.docCleanUp = function(req, res)
 	['page_remover.py', 
 		'-i', './uploads/' + req.body.filename + '.txt', 
 		'-o', './uploads/' + req.body.filename + '_clean.txt',
-		'-s', 'indenture.json'
+		'-s', 'indenture.json',
+		'-m', req.body.db_uri
 	]
 	);
 	
