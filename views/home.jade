@@ -1,7 +1,9 @@
 extends layout
 
 block content
-  h1 Upload an Indenture or OM in PDF
+  h1
+    i.fa.fa-file-pdf-o
+    |  Upload an Indenture or OM in PDF
   hr
   form#uploadForm(enctype="multipart/form-data", action="/docupload", method="post")
     input(type='hidden', name='_csrf', value=_csrf)
