@@ -26,12 +26,35 @@ function checkForConvertedPDF()
 				clearInterval(intervalCheckForPDF);
 			
 				$('#processingDiv').addClass('hidden');
-				$('#doneDiv').removeClass('hidden');
+				$('#cleaningDiv').removeClass('hidden');
+				
+				cleanUpConvertedPDF();
 			}
 			else pdfFilesize = jqXHR.getResponseHeader('Content-Length');
 		},
 		error: function(jqXHR, textStatus, errorThrown){
 			pdfCheckRunning = false;
 		}
+	});
+}
+
+function cleanUpConvertedPDF()
+{
+	$.post('/doccleanup', { filename: txtFile }, function( data ) 
+	{
+		if (data == 'Done')
+		{
+			$('#cleaningDiv').addClass('hidden');
+			$('#doneDiv').removeClass('hidden');
+		}
+		else alert( "Error on clean-up..." );
+	})
+	.fail(function() 
+	{
+		alert( "Error on clean-up..." );
+	})
+	.always(function() 
+	{
+		// yyyy
 	});
 }

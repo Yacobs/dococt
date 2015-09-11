@@ -1,0 +1,13 @@
+{
+	"general" : {
+		"page_break" : "",
+		"blank_line" : "^ *\\r\\n",
+		"section_header" : [ "^ *[A-Z]+ *M{0,4}(CM|CD|D?C{0,3})(XC|XL|L?X{0,3})(IX|IV|V?I{0,3}) *(\\n|\\r|\\f)",
+							 "^ *(Section|SECTION) *[0-9]+([.] |([.]*[0-9]+))" 
+						   ],
+		"definition_term" : [ "^ *[\"].+[\"]:" ]
+	},
+	"footer" : {
+		"page_numbers" : [ "^\\d+ *(\\n|\\r|\\f)" , "^[A-Z]-\\d+ *(\\n|\\r|\\f)" ]
+	}
+}

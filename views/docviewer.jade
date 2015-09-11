@@ -7,10 +7,14 @@ block content
   #processingDiv(class= status == 'converting' ? '' : 'hidden')
     h4
       img(src="ajax-loader.gif")
-      |  Processing your PDF... this could take a minute
+      |  Converting your PDF... this could take a minute
+  #cleaningDiv(class= status == 'cleaning' ? '' : 'hidden')
+    h4
+      img(src="ajax-loader.gif")
+      |  Cleaning up the data...
   #doneDiv(class= status == 'done' ? '' : 'hidden')
     | Click 
-    a(href=file+'.txt') here
+    a(href=file+'_clean.txt') here
     |  to download.
 
 block javascript
