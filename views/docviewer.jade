@@ -3,8 +3,17 @@ extends layout
 block content
   .page-header
     h3 Document Viewer
-  if typeof file != 'undefined' 
+  
+  #processingDiv(class= status == 'converting' ? '' : 'hidden')
+    h4
+      img(src="ajax-loader.gif")
+      |  Processing your PDF... this could take a minute
+  #doneDiv(class= status == 'done' ? '' : 'hidden')
     | Click 
-    a(href=file) here
+    a(href=file+'.txt') here
     |  to download.
 
+block javascript
+  script
+    | txtFile="#{file}";
+    include docviewer.js

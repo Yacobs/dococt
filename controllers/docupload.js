@@ -8,34 +8,23 @@ exports.docUpload = function(req, res)
 	console.log(req.file);
 	
 	if (typeof req.file == 'undefined') res.redirect('/');
-	else 
-	{
-		var python = require('child_process').spawn(
-		'python',
-		['pdf2txt.py', '-o', './uploads/' + req.file.filename + '.txt', './uploads/' + req.file.filename ]
-		);
-		
-		python.stdout.on('data', function(data){ console.log('stdout: ' + data)  });
-		python.stderr.on('data', function(data){ console.log('stderr: ' + data)  });
-		
-		python.on('close', function(code){
-			if (code !== 0) 
-			{
-				console.log('PDF Conversion Failed:' + code);
-				res.redirect('/');
-			}
-			else 
-			{
-				console.log('PDF Conversion Succeeded.');
-				res.redirect('docviewer?file=' + req.file.filename);
-			}
-		});
-	}
+	else res.redirect('docviewer?status=converting&file=' + req.file.filename);
+
+	var python = require('child_process').spawn(
+	'python',
+	['pdf2txt.py', '-o', './uploads/' + req.file.filename + '.txt', './uploads/' + req.file.filename ]
+	);
+	
+	python.stdout.on('data', function(data){ console.log('stdout: ' + data)  });
+	python.stderr.on('data', function(data){ console.log('stderr: ' + data)  });
+	
+	python.on('close', function(code){
+		if (code !== 0) console.log('PDF Conversion Failed:' + code);
+		else console.log('PDF Conversion Succeeded.');
+	});
 };
 
 exports.docViewer = function(req, res) 
 {
-	//if (typeof req.query.file == 'undefined') 
-	//else 
-	res.render('docviewer', { title: 'Document Viewer', file: req.query.file });
+	res.render('docviewer', { title: 'Document Viewer', status: req.query.status, file: req.query.file });
 }

@@ -11,6 +11,7 @@ var logger = require('morgan');
 var errorHandler = require('errorhandler');
 var lusca = require('lusca');
 var methodOverride = require('method-override');
+var timeout = require('connect-timeout');
 
 var _ = require('lodash');
 var MongoStore = require('connect-mongo')(session);
@@ -124,7 +125,7 @@ var storage = multer.diskStorage(
     }
 });
 */
-app.post('/docupload', multer({ dest: './uploads/'}).single('docFilename'), lusca.csrf(), docController.docUpload);
+app.post('/docupload', timeout('120s'), multer({ dest: './uploads/'}).single('docFilename'), lusca.csrf(), docController.docUpload);
 //app.post('/docupload', multer({ storage: storage }).single('docFilename'), lusca.csrf(), docController.docUpload);
 app.get('/docviewer', docController.docViewer);
 
