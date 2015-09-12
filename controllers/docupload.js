@@ -36,6 +36,8 @@ exports.docCleanUp = function(req, res)
 		'-i', './uploads/' + req.body.filename + '.txt', 
 		'-o', './uploads/' + req.body.filename + '_clean.txt',
 		'-s', 'indenture.json',
+		'-d',
+		'-l', './uploads/event.log',
 		'-m', req.body.db_uri
 	]
 	);
