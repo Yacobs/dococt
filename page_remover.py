@@ -196,7 +196,7 @@ def next_match(regex, lines, start, end):
             break
     
     return nextMatch
-       
+
 def reconnect_paragraphs(schema, lines):
     """
         Given a schema and a set of lines, reconnect paragraphs that have line breaks in the middle
@@ -225,6 +225,8 @@ def reconnect_paragraphs(schema, lines):
             outputLinesParagraphed.append(newParagraph + u'\n')
             skipLines = j-i-1
     
+    logging.debug("Reconnect paragraphs: saved {} lines.".format(len(outputLinesParagraphed)))
+    
     return outputLinesParagraphed
     
 def initial_cleanup(schema, lines):
@@ -251,6 +253,8 @@ def initial_cleanup(schema, lines):
 
         if printIt:
             outputLines.append(lines[i])
+            
+    logging.debug("Initial clean-up: saved {} lines.".format(len(outputLines)))
             
     return outputLines
                 
