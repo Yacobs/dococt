@@ -6,7 +6,7 @@ $(document).ready(function ()
 {
 	if (status == 'converting')
 	{
-		pdfFilesize = 0;
+		pdfFilesize = -1000;
 		pdfCheckRunning = false;
 		intervalCheckForPDF = setInterval(checkForConvertedPDF, 1500);
 	}
