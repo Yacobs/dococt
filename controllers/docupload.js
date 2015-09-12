@@ -10,9 +10,15 @@ exports.docUpload = function(req, res)
 	if (typeof req.file == 'undefined') res.redirect('/');
 	else res.redirect('docviewer?status=converting&file=' + req.file.filename);
 
+	/*
 	var python = require('child_process').spawn(
 	'python',
 	['pdf2txt.py', '-o', './uploads/' + req.file.filename + '.txt', './uploads/' + req.file.filename ]
+	);
+	*/
+	var python = require('child_process').spawn(
+	'pdftotext',
+	['./uploads/' + req.file.filename, './uploads/' + req.file.filename + '.txt' ]
 	);
 	
 	python.stdout.on('data', function(data){ console.log('stdout: ' + data)  });

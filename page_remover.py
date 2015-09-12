@@ -74,7 +74,7 @@ def main(argv):
 
     # process the input file
     lines = []
-    with codecs.open(inputFile, 'r', encoding='utf-8') as fin:
+    with codecs.open(inputFile, 'r', encoding='iso-8859-1') as fin:
         lines = fin.readlines()
     
     # figure out the schema
@@ -85,10 +85,10 @@ def main(argv):
     
     outputLines = initial_cleanup(schema, lines)
     
-    outputParagraphed = reconnect_paragraphs(schema, outputLines)
+    # outputParagraphed = reconnect_paragraphs(schema, outputLines)
     
     # time to convert the set of lines into an object -- eventually to become a JSON representation
-    document = break_down(schema, outputParagraphed, documentName)
+    document = break_down(schema, outputLines, documentName)
     with codecs.open('DICTIONARY.json', 'w', encoding='utf-8') as fout:
         json.dump(document, fout)
         
@@ -103,7 +103,7 @@ def main(argv):
 
     # write to the output file
     with codecs.open(outputFile, 'w', encoding='utf-8') as fout:
-        for line in outputParagraphed:
+        for line in outputLines:
             fout.write(line)
     
     print "\nPage Remover Done!"
@@ -254,7 +254,7 @@ def initial_cleanup(schema, lines):
         if printIt:
             outputLines.append(lines[i])
             
-    logging.debug("Initial clean-up: saved {} lines.".format(len(outputLines)))
+    logging.debug("Initial clean-up: from {} down to {} lines.".format(len(lines), len(outputLines)))
             
     return outputLines
                 
