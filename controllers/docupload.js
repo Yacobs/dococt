@@ -57,7 +57,14 @@ exports.docCleanUp = function(req, res)
 	});
 }
 
-exports.docViewer = function(req, res) 
+exports.docViewer = function(req, res, indentureModel) 
 {
-	res.render('docviewer', { title: 'Document Viewer', status: req.query.status, file: req.query.file });
+	if (req.query.status == 'done')
+	{
+		indentureModel.findOne({ type: 'document', name: req.query.file }, function(err, result)
+		{
+			res.render('docviewer', { title: 'Document Viewer', status: req.query.status, file: req.query.file, doc: result });
+		});
+	}
+	else res.render('docviewer', { title: 'Document Viewer', status: req.query.status, file: req.query.file });
 }

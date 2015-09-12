@@ -51,6 +51,8 @@ mongoose.connect(secrets.db);
 mongoose.connection.on('error', function() {
   console.error('MongoDB Connection Error. Please make sure that MongoDB is running.');
 });
+var indentureSchema = new mongoose.Schema({ name : String, type: String, data: Array });
+var indentureModel = mongoose.model('indenture', indentureSchema);
 
 /**
  * Express configuration.
@@ -135,7 +137,11 @@ app.post('/doccleanup',
 		next();
 	}, 
 	docController.docCleanUp);
-app.get('/docviewer', docController.docViewer);
+app.get('/docviewer', 
+	function(req, res) 
+	{
+		 docController.docViewer(req, res, indentureModel);
+	});
 
 /**
  * API examples routes.

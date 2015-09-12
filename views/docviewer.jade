@@ -12,12 +12,53 @@ block content
     h4
       img(src="ajax-loader.gif")
       |  Cleaning up the data...
-  #doneDiv(class= status == 'done' ? '' : 'hidden')
-    | Click 
-    a(href=file+'_clean.txt') here
-    |  to download.
+  if status == 'done'
+    //- | #{doc.name}
+    .container-fluid
+      .row
+        .col-sm-6
+          ul
+            each chunk, index in doc.data
+              if chunk.type == 'text' 
+                li
+                  a(href="javascript:void(0);", onclick='docViewerShow(' + index + ', "n", "n")') Introduction
+              else
+                if chunk.data.length > 0
+                  if chunk.data[0].type == 'text'
+                    li
+                      a(href="javascript:void(0);", onclick='docViewerShow(' + index + ', 0, "n")') #{chunk.name}
+                  ul
+                    each chunk1, index1 in chunk.data
+                      if chunk1.type != 'text'
+                        li
+                          a(href="javascript:void(0);", onclick='docViewerShow(' + index + ', ' + index1 + ', "n")') #{chunk1.name}
+                else
+                  li= chunk.name
+        .col-sm-6
+          each chunk, index in doc.data
+            if chunk.type == 'text'
+              div(id='docViewerText_' + index + '_n_n', class="docViewerText hidden")
+                each line in chunk.data
+                  | #{line}
+                  br
+                  br
+            else if chunk.type != 'text' && chunk.data.length > 0
+              each chunk1, index1 in chunk.data
+                if chunk1.type == 'text'
+                  div(id='docViewerText_' + index + '_' + index1 + '_n', class="docViewerText hidden")
+                    each line in chunk1.data
+                      | #{line}
+                      br
+                      br
+                else if chunk1.type != 'text' && chunk1.data.length > 0
+                  div(id='docViewerText_' + index + '_' + index1 + '_n', class="docViewerText hidden")
+                    each line in chunk1.data
+                      | #{line}
+                      br
+                      br
 
 block javascript
   script
+    | status="#{status}";
     | txtFile="#{file}";
     include docviewer.js

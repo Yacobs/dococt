@@ -4,10 +4,19 @@ var pdfCheckRunning;
 
 $(document).ready(function ()
 {
-	pdfFilesize = 0;
-	pdfCheckRunning = false;
-	intervalCheckForPDF = setInterval(checkForConvertedPDF, 1500);
+	if (status == 'converting')
+	{
+		pdfFilesize = 0;
+		pdfCheckRunning = false;
+		intervalCheckForPDF = setInterval(checkForConvertedPDF, 1500);
+	}
 });
+
+function docViewerShow(i, j, k)
+{
+	$('.docViewerText').addClass('hidden')
+	$('#docViewerText_' + i + '_' + j + '_' + k).removeClass('hidden')
+}
 
 function checkForConvertedPDF()
 {
@@ -44,8 +53,7 @@ function cleanUpConvertedPDF()
 	{
 		if (data == 'Done')
 		{
-			$('#cleaningDiv').addClass('hidden');
-			$('#doneDiv').removeClass('hidden');
+			window.location.replace("/docviewer?status=done&file=" + txtFile);
 		}
 		else alert( "Error on clean-up..." );
 	})
